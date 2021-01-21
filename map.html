@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Demo</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+<style>
+body, html, div, dl, dt, dd{ margin: 0; padding: 0; color: #333; font-size:12px; }
+table{ border-collapse: collapse; border-spacing: 0;}
+
+.pj-horizontal-scrollerbar{ overflow:hidden; overflow-x:scroll; -webkit-overflow-scrolling:touch; }
+.pj-vertical-scrollerbar{ overflow:hidden; overflow-y:scroll; -webkit-overflow-scrolling:touch; }
+.pj-horizontal-scrollerbar::-webkit-scrollbar,
+.pj-horizontal-scrollerbar::-webkit-scrollbar-track-piece,
+.pj-vertical-scrollerbar::-webkit-scrollbar-track-piece,
+.pj-vertical-scrollerbar::-webkit-scrollbar{ background-color:transparent; display: none; opacity: 0; }
+
+#container { overflow: hidden; width: 100%; height: 100%; font-family: -apple-system-font, Helvetica Neue, Helvetica, sans-serif, "微软雅黑"; position: relative; box-sizing: border-box; transition: all 0.2s; }
+#container.open{ padding-left: 160px; }
+#sub_menu{ box-sizing: border-box; position: absolute; left: -160px; width: 160px; top:0; height: 100%; padding: 30px 15px; border-right: 1px solid #eee; background-color: #fff; z-index: 100; }
+#container.open #sub_menu{ left:0; }
+#sub_menu dl{ margin: 0 0 30px 0; }
+#sub_menu dt{ font-size: 14px; }
+#sub_menu dd{ padding-left: 12px; line-height: 20px; }
+#sub_menu .toggler{ position: absolute; right: -14px; top:50%; transform: translate(0, -50%); width: 12px; height: 32px; background-color: #fff; border: 1px solid #999; cursor: pointer; }
+#sub_menu .toggler:after{ content: ' '; width: 6px; height: 6px; position: absolute; left: -3px; top: 13px; transform: rotate(45deg) ; border:1px solid #999; border-left-color: transparent; border-bottom-color: transparent;  }
+#container.open #sub_menu .toggler:after{ transform: rotate(-135deg); left: 4px;  }
+
+
+.device-item{ cursor: pointer; }
+.device-item.active{ color:#0fbbe9; }
+.device-item:hover{ color:#0fbbe9; text-decoration: underline; }
+
+#map_area_wrap{ height: 100%; position: relative; }
+#map_area{ height: 100%; }
+#device_info{ display: none; position: absolute; left: 50%; transform: translate(-50%, 0); bottom: 100px; z-index: 100; width: 300px; background-color: rgba(0, 0, 0, .1); }
+#device_info table{ width: 100%; }
+#device_info td{ border: 1px solid #0fbbe9; padding: 5px 10px; font-weight: bold; }
+
+.video-box{ display: none; position: absolute; z-index: 100; padding: 10px; width: 300px; height: 180px; background-color: #fff; }
+.video-box .hd{ overflow: hidden; }
+.video-box .name{ float: left; }
+.video-box .close{ float: right; color:#999; cursor: pointer; }
+.video-box .video{ width: 100%; height: 150px; margin-top: 10px; }
+</style>
+</head>
+<body>
+
+  <div id="container" class="open">
+		<!-- 侧边菜单 -->
+		<div id="sub_menu">
+			<div class="toggler"></div>
+			<div class="pj-vertical-scrollerbar" style="max-height: 80vh;">
+				<div id="menu">
+					<dl>
+						<dt>跑道南侧</dt>
+						<dd>
+							<div class="device-item" data-id="1">设备一</div>
+							<div class="device-item" data-id="2">设备二</div>
+						</dd>
+						<dd></dd>
+					</dl>
+					<dl>
+						<dt>跑道北侧</dt>
+						<dd>
+							<div class="device-item" data-id="3">设备三</div>
+							<div class="device-item" data-id="4">设备四</div>
+							<div class="device-item" data-id="5">设备五</div>
+						</dd>
+					</dl>
+				</div>
+			</div>			
+		</div>
+		<!-- 地图区域 -->
+		<div id="map_area_wrap">
+			<div id="map_area"></div>
+			<!-- 视频容器 -->
+			<div class="video-box" data-id="1">
+				<div class="hd">
+					<div class="name"></div>
+					<span class="close">关闭</span>
+				</div>
+				<video class="video" controls preload="auto" src=""></video>
+			</div>
+			<div class="video-box" data-id="2">
+				<div class="hd">
+					<div class="name"></div>
+					<span class="close">关闭</span>
+				</div>
+				<video class="video" controls preload="auto" src=""></video>
+			</div>
+			<div class="video-box" data-id="3">
+				<div class="hd">
+					<div class="name"></div>
+					<span class="close">关闭</span>
+				</div>
+				<video class="video" controls preload="auto" src=""></video>
+			</div>
+			<div class="video-box" data-id="4">
+				<div class="hd">
+					<div class="name"></div>
+					<span class="close">关闭</span>
+				</div>
+				<video class="video" controls preload="auto" src=""></video>
+			</div>
+		</div>
+		<!-- 设备信息 -->
+		<div id="device_info">
+			<table>
+				<thead>
+					<tr>
+						<td>名称</td>
+						<td>编号</td>
+						<td>电池电压</td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>
+							<div id="device_name"></div>
+						</td>
+						<td>
+							<div id="device_num"></div>
+						</td>
+						<td>
+							<div id="device_value"></div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://api.map.baidu.com/api?type=webgl&v=1.0&ak=Zl6iLSxl4MW3B0AujelNa6Kd3kvsxaqb"></script>
+<script>
+$(function(){
+	var $container = $('#container');
+	$container.css({
+		'height': document.documentElement.clientHeight + 'px'
+	});
+
+	var MAP_ZOOM_SCALE = 15;
+
+	// 设备数据
+	var items = [
+		{ id: 1, lng: 118.870184, lat: 31.743965, name: '地面全向1号', num: '2020111701042320', value: '15.4', video_url: 'https://video.fastadmin.net/uploads/basic/addon.mp4' },
+		{ id: 2, lng: 118.89045, lat: 31.753914, name: '地面全向2号', num: '2020111701042321', value: '15.5', video_url: 'https://video.fastadmin.net/uploads/basic/addon.mp4' },
+		{ id: 3, lng: 118.898427, lat: 31.74028, name: '地面全向3号', num: '2020111701042322', value: '15.6', video_url: 'https://video.fastadmin.net/uploads/basic/addon.mp4' },
+		{ id: 4, lng: 118.873347, lat: 31.723818, name: '地面全向4号', num: '2020111701042323', value: '15.7', video_url: 'https://video.fastadmin.net/uploads/basic/addon.mp4' },
+		{ id: 5, lng: 118.859897, lat: 31.716497, name: '地面全向5号', num: '2020111701042324', value: '15.8' },
+	];
+
+	var formatNum = function(f, digit) {
+		var m = Math.pow(10, digit);
+		return parseInt(f * m, 10) / m;
+	}
+
+	var $device_name = $container.find('#device_name');
+	var $device_num = $container.find('#device_num');
+	var $device_value = $container.find('#device_value');
+
+	// 显示视频的索引，目前限制显示4个视频，
+	var showVideoIndex = 0;
+
+	var MapBuilder = {
+		map: null,
+		init: function(){
+			var me = this;
+			this.map = new BMapGL.Map('map_area');
+			var point = new BMapGL.Point(items[0].lng, items[0].lat);
+			this.map.centerAndZoom(point, MAP_ZOOM_SCALE);
+			this.map.enableScrollWheelZoom(true);	
+			
+			var scaleCtrl = new BMapGL.ScaleControl();  // 添加比例尺控件
+			this.map.addControl(scaleCtrl);
+			var zoomCtrl = new BMapGL.ZoomControl();  // 添加比例尺控件
+			this.map.addControl(zoomCtrl);
+			
+			for( var i=0; i<items.length; i++ ){
+				(function(m){
+					var point = new BMapGL.Point( items[m].lng, items[m].lat );
+					var device_icon = new BMapGL.Icon("./static/imgs/device.png", new BMapGL.Size(50, 45));
+					var device_marker = new BMapGL.Marker(point, {
+						icon: device_icon
+					});
+					me.map.addOverlay(device_marker);
+					device_marker.addEventListener('click', function () {
+						me.map.centerAndZoom(point, MAP_ZOOM_SCALE);
+						$device_name.text(items[m].name).parents('#device_info').show();
+						$device_num.text(items[m].num);
+						$device_value.text(items[m].value);
+					});
+
+					if( items[m].video_url ){
+						var camera_icon = new BMapGL.Icon("./static/imgs/camera.png", new BMapGL.Size(50, 40));
+						var camera_marker = new BMapGL.Marker(new BMapGL.Point( formatNum(items[m].lng + 0.0001, 5 ), formatNum(items[m].lat + 0.0028, 5 ) ), {
+							icon: camera_icon
+						});
+						me.map.addOverlay(camera_marker);	
+						camera_marker.addEventListener('click', function () {
+							var video_url = items[m].video_url;
+							var $video = $('.video-box[data-id='+items[m].id+']');
+							if( $video.hasClass('show') ) {
+								return;
+							}
+							$video.addClass('show');
+							$video.find('.video').attr('src', items[m].video_url );
+							$video.find('.video')[0].play();
+							$video.find('.name').text(items[m].name);
+							$video.find('.close').on('click', function(){
+								var $parent = $(this).parents('.video-box')
+								if( $parent.hasClass('show') ){
+									$parent.attr('style', '').removeClass('show');
+									$video.find('.video')[0].pause();
+									showVideoIndex--;
+									console.log('showVideoIndex--', showVideoIndex);
+								}
+							})
+
+							switch (showVideoIndex) {
+								case 0:
+									$video.css({
+										right: '20px',
+										top: '20px'
+									});
+									break;
+								case 1:
+									$video.css({
+										right: '20px',
+										bottom: '20px'
+									});
+									break;
+								case 2:
+									$video.css({
+										left: '20px',
+										top: '20px'
+									});
+									break;
+								case 3:
+									$video.css({
+										left: '20px',
+										bottom: '50px'
+									});
+									break;
+							}
+							$video.show();
+							showVideoIndex++;
+							console.log('showVideoIndex++', showVideoIndex);
+						});
+					}
+					
+				})(i);
+			}
+
+			this.initNodes();
+		},
+		initNodes: function(){
+			var me = this;
+			$container.find('.toggler').on('click', function(){
+				if( $container.hasClass('open') ){
+					$container.removeClass('open');
+				}else{
+					$container.addClass('open');
+				}
+			});
+			
+			var $devices = $container.find('.device-item');
+			$devices.on('click', function(){
+				var lnglat;
+				for( var i=0; i<items.length; i++ ){
+					if( items[i].id == $(this).data('id') ){
+						lnglat = items[i];
+						break;
+					}
+				}
+				var point = new BMapGL.Point( lnglat.lng, lnglat.lat );
+				me.map.centerAndZoom(point, MAP_ZOOM_SCALE);
+				$devices.removeClass('active');
+				$(this).addClass('active');
+				$device_name.text(lnglat.name).parents('#device_info').show();
+				$device_num.text(lnglat.num);
+				$device_value.text(lnglat.value);
+			});
+
+		}
+	};
+	MapBuilder.init();
+
+	
+
+});
+</script>
+</body>
+</html>
+
