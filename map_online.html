@@ -1,0 +1,481 @@
+<style>
+  body,
+  html,
+  div,
+  dl,
+  dt,
+  dd {
+    margin: 0;
+    padding: 0;
+    color: #333;
+    font-size: 12px;
+  }
+
+  table {
+    border-collapse: collapse;
+    border-spacing: 0;
+  }
+
+  .pj-horizontal-scrollerbar {
+    overflow: hidden;
+    overflow-x: scroll;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .pj-vertical-scrollerbar {
+    overflow: hidden;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .pj-horizontal-scrollerbar::-webkit-scrollbar,
+  .pj-horizontal-scrollerbar::-webkit-scrollbar-track-piece,
+  .pj-vertical-scrollerbar::-webkit-scrollbar-track-piece,
+  .pj-vertical-scrollerbar::-webkit-scrollbar {
+    background-color: transparent;
+    display: none;
+    opacity: 0;
+  }
+
+  #container {
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    font-family: -apple-system-font, Helvetica Neue, Helvetica, sans-serif, "微软雅黑";
+    position: relative;
+    box-sizing: border-box;
+    transition: all 0.2s;
+  }
+
+  #container.open {
+    padding-left: 160px;
+  }
+
+  #sub_menu {
+    box-sizing: border-box;
+    position: absolute;
+    left: -160px;
+    width: 160px;
+    top: 0;
+    height: 100%;
+    padding: 30px 15px;
+    border-right: 1px solid #eee;
+    background-color: #fff;
+    z-index: 100;
+    user-select: none;
+  }
+
+  #container.open #sub_menu {
+    left: 0;
+  }
+
+  #sub_menu dl {
+    margin: 0 0 30px 0;
+  }
+
+  #sub_menu dt {
+    position: relative;
+    font-size: 14px;
+    cursor: pointer;
+    margin-bottom: 6px;
+  }
+
+  #sub_menu dt .arr {
+    width: 5px;
+    height: 5px;
+    border-top: 1px solid #999;
+    border-left: 1px solid #999;
+    transform: rotate(-45deg);
+    position: absolute;
+    top: 7px;
+    right: 0;
+    transition: all 0.2s;
+  }
+
+  #sub_menu dt.open .arr {
+    transform: rotate(-135deg);
+  }
+
+  #sub_menu dd {
+    padding-left: 12px;
+    line-height: 20px;
+  }
+
+  #sub_menu .toggler {
+    position: absolute;
+    right: -14px;
+    top: 50%;
+    transform: translate(0, -50%);
+    width: 12px;
+    height: 32px;
+    background-color: #fff;
+    border: 1px solid #999;
+    cursor: pointer;
+  }
+
+  #sub_menu .toggler:after {
+    content: ' ';
+    width: 6px;
+    height: 6px;
+    position: absolute;
+    left: -3px;
+    top: 13px;
+    transform: rotate(45deg);
+    border: 1px solid #999;
+    border-left-color: transparent;
+    border-bottom-color: transparent;
+  }
+
+  #container.open #sub_menu .toggler:after {
+    transform: rotate(-135deg);
+    left: 4px;
+  }
+
+
+  .device-item {
+    cursor: pointer;
+  }
+
+  .device-item.active {
+    color: #0fbbe9;
+  }
+
+  .device-item:hover {
+    color: #0fbbe9;
+    text-decoration: underline;
+  }
+
+  #map_area_wrap {
+    height: 100%;
+    position: relative;
+  }
+
+  #map_area {
+    height: 100%;
+  }
+
+  #device_info {
+    display: none;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0);
+    bottom: 100px;
+    z-index: 100;
+    width: 350px;
+    background-color: rgba(0, 0, 0, .1);
+  }
+
+  #device_info table {
+    width: 100%;
+  }
+
+  #device_info td {
+    border: 1px solid #0fbbe9;
+    padding: 5px 10px;
+    font-weight: bold;
+  }
+
+  .video-box {
+    display: none;
+    position: absolute;
+    z-index: 100;
+    padding: 0 0 10px 0;
+    width: 300px;
+    background-color: #fff;
+  }
+
+  .video-box .hd {
+    overflow: hidden;
+    line-height: 32px;
+    padding: 0 10px;
+  }
+
+  .video-box .name {
+    float: left;
+  }
+
+  .video-box .close-video {
+    float: right;
+    color: #999;
+    cursor: pointer;
+    font-size: 12px;
+  }
+
+  .video-box .video {
+    width: 100%;
+    height: 150px;
+    margin-top: 10px;
+    margin-left: 0px;
+  }
+</style>
+
+<div id="container" class="open">
+  <!-- 侧边菜单 -->
+  <div id="sub_menu">
+    <div class="toggler"></div>
+    <div class="pj-vertical-scrollerbar" style="max-height: 80vh;">
+      <div id="menu">
+        {foreach name="row" item="vo"}
+        <dl>
+          <dt class="menu-hd open">
+            <span>{$vo.mingcheng|htmlentities}</span>
+            {if count($vo.shebei) > 0 }
+            <i class="arr"></i>
+            {/if}
+          </dt>
+          <dd class="menu-bd">
+            {foreach name="$vo.shebei" item="voshebei"}
+            <div class="device-item" data-id="{$voshebei.id|htmlentities}" data-lng="{$voshebei.longitude|htmlentities}"
+              data-lat="{$voshebei.latitude|htmlentities}" data-name="{$voshebei.mingcheng|htmlentities}"
+              data-num="{$voshebei.sn|htmlentities}" data-value="{$voshebei.dianya|htmlentities}"
+              data-deviceicon="{$voshebei.shebeitubiao|htmlentities}" data-video="{$voshebei.shipinurl|htmlentities}">
+              {$voshebei.mingcheng|htmlentities}</div>
+            {/foreach}
+          </dd>
+        </dl>
+        {/foreach}
+      </div>
+    </div>
+  </div>
+  <!-- 地图区域 -->
+  <div id="map_area_wrap">
+    <div id="map_area"></div>
+  </div>
+
+  <!-- 设备信息 -->
+  <div id="device_info">
+    <table>
+      <thead>
+        <tr>
+          <td>名称</td>
+          <td>编号</td>
+          <td>电池电压</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div id="device_name"></div>
+          </td>
+          <td>
+            <div id="device_num"></div>
+          </td>
+          <td>
+            <div id="device_value"></div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script src="https://api.map.baidu.com/api?type=webgl&v=1.0&ak=Zl6iLSxl4MW3B0AujelNa6Kd3kvsxaqb"></script>
+<script>
+  $(function () {
+
+    var $container = $('#container');
+    $container.css({
+      'height': document.documentElement.clientHeight - 50 + 'px'
+    });
+    $(window).on('resize', function () {
+      $container.css({
+        'height': document.documentElement.clientHeight - 50 + 'px'
+      });
+    });
+
+
+    var MAP_ZOOM_SCALE = 15;
+    var SHOW_VIDEO_COUNT = 4;
+
+
+    var formatNum = function (f, digit) {
+      var m = Math.pow(10, digit);
+      return parseInt(f * m, 10) / m;
+    }
+
+    var $device_name = $container.find('#device_name');
+    var $device_num = $container.find('#device_num');
+    var $device_value = $container.find('#device_value');
+
+    // 显示视频的索引，目前限制显示4个视频，
+    var showVideoIndex = 0;
+
+    var MapBuilder = {
+      map: null,
+      init: function () {
+        var me = this;
+
+        var $devices = $container.find('.device-item');
+        var $mapArea = $container.find('#map_area_wrap');
+
+        this.map = new BMapGL.Map('map_area');
+        var point = new BMapGL.Point($devices.eq(0).data('lng'), $devices.eq(0).data('lat'));
+        this.map.centerAndZoom(point, MAP_ZOOM_SCALE);
+        this.map.enableScrollWheelZoom(true);
+
+        var scaleCtrl = new BMapGL.ScaleControl();  // 添加比例尺控件
+        this.map.addControl(scaleCtrl);
+        var zoomCtrl = new BMapGL.ZoomControl();  // 添加比例尺控件
+        this.map.addControl(zoomCtrl);
+
+        var styles = [
+          'right:20px;top:20px;',
+          'right:20px;bottom:20px;',
+          'left:20px;top:20px;',
+          'left:20px;bottom:50px;'
+        ];
+        var videoNodes = [
+          { id: null, style: '', idx: 1 },
+          { id: null, style: '', idx: 2 },
+          { id: null, style: '', idx: 3 },
+          { id: null, style: '', idx: 4 }
+        ];
+
+        for (var i = 0; i < $devices.length; i++) {
+          (function (m) {
+            var $item = $devices.eq(m);
+            var videoTpls = '<div class="video-box" data-id="' + $item.data('id') + '">' +
+              '<div class="hd">' +
+              '<div class="name">' + $item.data('name') + '</div>' +
+              '<span class="close-video">关闭</span>' +
+              '</div>' +
+              '<video class="video" controls preload="auto" src=""></video>' +
+              '</div>';
+            $mapArea.append(videoTpls);
+
+            var lng = parseFloat($item.data('lng'));
+            var lat = parseFloat($item.data('lat'));
+
+            var point = new BMapGL.Point(lng, lat);
+            var device_icon = new BMapGL.Icon($item.data('deviceicon'), new BMapGL.Size(50, 45));
+            var device_marker = new BMapGL.Marker(point, {
+              icon: device_icon
+            });
+            me.map.addOverlay(device_marker);
+
+            device_marker.addEventListener('click', function () {
+              me.map.centerAndZoom(point, MAP_ZOOM_SCALE);
+              $device_name.text($item.data('name')).parents('#device_info').show();
+              $device_num.text($item.data('num'));
+              $device_value.text($item.data('value'));
+            });
+
+            var video = $item.data('video');
+            if (video) {
+              var camera_icon = new BMapGL.Icon("/camera.png", new BMapGL.Size(50, 40));
+              var camera_marker = new BMapGL.Marker(new BMapGL.Point(formatNum(lng + 0.0001, 5), formatNum(lat + 0.0028, 5)), {
+                icon: camera_icon
+              });
+              camera_marker.customData = {
+                id: $item.data('id'),
+                video: video
+              };
+              me.map.addOverlay(camera_marker);
+              camera_marker.addEventListener('click', function () {
+                var video_url = this.customData.video;
+                var $video = $('.video-box[data-id=' + this.customData.id + ']');
+                if ($video.hasClass('show')) {
+                  alert('视频已打开');
+                  return;
+                }
+                if (showVideoIndex == SHOW_VIDEO_COUNT) {
+                  alert('请先关闭某个视频，再进行查看');
+                  return;
+                }
+                $video.addClass('show');
+                var videoNode = $video.find('.video')[0];
+                if (Hls.isSupported()) {
+                  var hls = new Hls();
+                  hls.loadSource(video_url);
+                  hls.attachMedia(videoNode);
+                  hls.on(Hls.Events.MANIFEST_PARSED, function () {
+                    videoNode.play();
+                  });
+                } else if (videoNode.canPlayType('application/vnd.apple.mpegurl')) {
+                  videoNode.src = video_url;
+                  videoNode.addEventListener('loadedmetadata', function () {
+                    videoNode.play();
+                  });
+                }
+                $video.find('.video')[0].play();
+                $video.find('.close-video').on('click', function () {
+                  var $parent = $(this).parents('.video-box')
+                  if ($parent.hasClass('show')) {
+                    $parent.attr('style', '').removeClass('show');
+                    $video.find('.video')[0].pause();
+                    for (var i = 0; i < SHOW_VIDEO_COUNT; i++) {
+                      if ($video.data('id') == videoNodes[i].id) {
+                        videoNodes[i].id = '';
+                        break;
+                      }
+                    }
+                    showVideoIndex--;
+                  }
+                });
+
+                var hasInitedStyles = false;
+                for (var i = 0; i < SHOW_VIDEO_COUNT; i++) {
+                  if (videoNodes[i].id == '' && videoNodes[i].style) {
+                    hasInitedStyles = true;
+                    $video.attr('style', videoNodes[i].style).show();
+                    videoNodes[i].id = this.customData.id;
+                    showVideoIndex++;
+                    break;
+                  }
+                }
+                if (!hasInitedStyles) {
+                  $video.attr('style', styles[showVideoIndex]).show();
+                  videoNodes[showVideoIndex].id = this.customData.id;
+                  videoNodes[showVideoIndex].style = styles[showVideoIndex];
+                  showVideoIndex++;
+                }
+
+              });
+            }
+
+          })(i);
+        }
+
+        this.initNodes();
+      },
+      initNodes: function () {
+        var me = this;
+        $container.find('.toggler').on('click', function () {
+          if ($container.hasClass('open')) {
+            $container.removeClass('open');
+          } else {
+            $container.addClass('open');
+          }
+        });
+
+        $container.find('.menu-hd').on('click', function () {
+          if ($(this).hasClass('open')) {
+            $(this).removeClass('open');
+            $(this).siblings('.menu-bd').slideUp('fast');
+          } else {
+            $(this).addClass('open');
+            $(this).siblings('.menu-bd').slideDown('fast');
+          }
+        });
+
+        var $devices = $container.find('.device-item');
+        $devices.on('click', function () {
+          var point = new BMapGL.Point($(this).data('lng'), $(this).data('lat'));
+          me.map.centerAndZoom(point, MAP_ZOOM_SCALE);
+          $devices.removeClass('active');
+          $(this).addClass('active');
+          $device_name.text($(this).data('name')).parents('#device_info').show();
+          $device_num.text($(this).data('num'));
+          $device_value.text($(this).data('value'));
+        });
+
+      }
+    };
+    MapBuilder.init();
+
+
+
+  });
+</script>
